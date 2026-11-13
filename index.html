@@ -190,29 +190,7 @@
     </div> -->
 
     <script>
-        // 优先读取同目录 data.js 暴露的数据；兼容常见全局名称和数组/records对象格式。
-        function getRecordsFromDataJS() {
-            let source;
-            if (typeof window.roadDonationRecords !== 'undefined') source = window.roadDonationRecords;
-            else if (typeof window.donationRecords !== 'undefined') source = window.donationRecords;
-            else if (typeof window.records !== 'undefined') source = window.records;
-            else if (typeof window.data !== 'undefined') source = window.data;
-            else if (typeof window.DATA !== 'undefined') source = window.DATA;
-            else if (typeof data !== 'undefined') source = data;
-            if (Array.isArray(source)) return source;
-            if (source && Array.isArray(source.records)) return source.records;
-            if (source && Array.isArray(source.data)) return source.data;
-            return null;
-        }
-        const dataJSRecords = getRecordsFromDataJS();
-        let records = (dataJSRecords || JSON.parse(localStorage.getItem('roadDonationRecords') || '[]')).map((r, i) => ({
-            id: Number(r.id) || Date.now() + i,
-            name: String(r.name ?? r.person ?? r.donor ?? ''),
-            type: String(r.type ?? r.category ?? '捐资'),
-            amount: Number(r.amount ?? r.value ?? 0),
-            note: String(r.note ?? r.remark ?? ''),
-            date: String(r.date ?? r.time ?? '')
-        }));
+        let records = JSON.parse(localStorage.getItem('roadDonationRecords') || '[]');
         const form = document.getElementById('recordForm');
         const addFormModal = document.getElementById('addForm');
         const recordTable = document.getElementById('recordTable');
