@@ -221,21 +221,21 @@
         }
 
         // 提交表单
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const record = {
-                id: Date.now(),
-                name: document.getElementById('name').value.trim(),
-                type: document.getElementById('type').value,
-                amount: parseFloat(document.getElementById('amount').value),
-                note: document.getElementById('note').value.trim(),
-                date: document.getElementById('date').value
-            };
-            records.push(record);
-            saveAndRender();
-            toggleForm();
-            showToast('记录添加成功！');
-        });
+        // form.addEventListener('submit', function(e) {
+        //     e.preventDefault();
+        //     const record = {
+        //         id: Date.now(),
+        //         name: document.getElementById('name').value.trim(),
+        //         type: document.getElementById('type').value,
+        //         amount: parseFloat(document.getElementById('amount').value),
+        //         note: document.getElementById('note').value.trim(),
+        //         date: document.getElementById('date').value
+        //     };
+        //     records.push(record);
+        //     saveAndRender();
+        //     toggleForm();
+        //     showToast('记录添加成功！');
+        // });
 
         // 删除记录
         function deleteRecord(id) {
@@ -326,7 +326,6 @@
                     <td class="py-2 md:py-3 px-2 md:px-4 text-center ${typeClass}">${r.type}</td>
                     <td class="py-2 md:py-3 px-2 md:px-4 text-right">${amountText}</td>
                     <td class="py-2 md:py-3 px-2 md:px-4">${r.note || '-'}</td>
-                    <td class="py-2 md:py-3 px-2 md:px-4 text-center"><button onclick="deleteRecord(${r.id})" class="ml-2 text-gray-400 hover:text-red-500 print:hidden" title="删除"><i class="fa fa-times-circle"></i></button></td>
                 </tr>
                 `;
             });
