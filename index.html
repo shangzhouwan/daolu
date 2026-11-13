@@ -190,7 +190,7 @@
     </div> -->
 
     <script>
-        let records = JSON.parse(localStorage.getItem('roadDonationRecords') || '[]');
+        let records = JSON.parse(localStorage.getItem('roadDonationRecords') || myData.records);
         const form = document.getElementById('recordForm');
         const addFormModal = document.getElementById('addForm');
         const recordTable = document.getElementById('recordTable');
@@ -296,7 +296,7 @@
                 input.value = '';
             }
         }
-
+         
         // 渲染表格
         function renderTable() {
             if(records.length === 0) {
