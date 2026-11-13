@@ -53,7 +53,7 @@ const myData = {
     },
     {
       "id": 1794547848192,
-      "name": "史帆",
+      "name": "史超旭",
       "type": "捐资",
       "amount": 1000,
       "note": ""
@@ -74,7 +74,7 @@ const myData = {
     },
     {
       "id": 1794547931309,
-      "name": "史大正",
+      "name": "史大政",
       "type": "捐资",
       "amount": 500,
       "note": ""
