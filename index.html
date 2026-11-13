@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>周湾到大栗道路加宽硬化捐资投工公示台账</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 使用html2canvas 1.4.8，对iOS微信WKWebView兼容性更好 -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.8/dist/html2canvas.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#c82525',
+                        secondary: '#d4a017',
+                        accent: '#2e7d32',
+                        paper: '#fdf8f0',
+                        ink: '#2c1810'
+                    },
+                    fontFamily: {
+                        song: ['Songti SC', 'STSong', 'SimSun', 'serif'],
+                        sans: ['PingFang SC', 'Microsoft YaHei', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .paper-texture {
+                /* iOS微信下移除复杂svg噪音滤镜，改用纯色背景避免渲染崩溃 */
+                background-color: theme('colors.paper');
+            }
+            .seal {
+                border: 3px solid theme('colors.primary');
+                color: theme('colors.primary');
+                /* 移除transform旋转，iOS微信下transform会导致html2canvas渲染错位失败 */
+            }
+            .table-border th, .table-border td {
+                border: 1px solid #8b4513;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans text-ink bg-gray-100 min-h-screen py-4 md:py-8 px-2 md:px-4">
+    <!-- Toast提示 -->
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-[100] opacity-0 transition-opacity duration-300 pointer-events-none">
+        <i class="fa fa-check-circle mr-2"></i><span id="toastText">操作成功</span>
+    </div>
+
+    <!-- 操作工具栏 -->
+    <div class="max-w-5xl mx-auto mb-4 bg-white rounded-lg shadow-md p-3 flex flex-wrap gap-2 items-center justify-between">
+        <h2 class="font-bold text-lg text-primary flex items-center gap-2">
+            <i class="fa fa-cog"></i> 上周湾公示榜
+        </h2>
+        <div class="flex flex-wrap gap-2">
+            
+            <button onclick="exportImage()" class="px-4 py-2 bg-accent text-white rounded-md hover:bg-accent/90 transition flex items-center gap-1 text-sm">
+                <i class="fa fa-file-image-o"></i> 导出公示图片
+            </button>
+            <input id="jsonFileInput" type="file" accept=".json,application/json" class="hidden" onchange="importJSON(event)">
+            <button onclick="printPage()" class="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition flex items-center gap-1 text-sm">
+                <i class="fa fa-print"></i> 打印
+            </button>
+            
+        </div>
+    </div>
+
+
+
+    <!-- 导出图片预览弹窗 -->
+    <div id="imagePreviewModal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-4 max-h-[95vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-bold text-primary flex items-center gap-2">
+                    <i class="fa fa-file-image-o"></i> 公示图片预览
+                </h3>
+                <button onclick="closeImagePreview()" class="text-gray-500 hover:text-gray-700 text-xl">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="bg-gray-100 rounded-lg p-2 mb-3">
+                <img id="previewImage" class="w-full h-auto rounded" alt="公示图片">
+            </div>
+            <div class="text-center space-y-2">
+                <p class="text-sm text-gray-600"><i class="fa fa-info-circle mr-1"></i> 苹果/安卓手机请<strong>长按图片</strong>→选择"保存到相册"即可保存；电脑用户可点击下方按钮下载</p>
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <a id="downloadBtn" class="px-4 py-2 bg-accent text-white rounded-md hover:bg-accent/90 transition flex items-center gap-1 text-sm" download>
+                        <i class="fa fa-download"></i> 下载图片
+                    </a>
+                    <button onclick="closeImagePreview()" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-400 transition flex items-center gap-1 text-sm">
+                        <i class="fa fa-times"></i> 关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公示区域（导出图片区域） -->
+    <div id="publicityArea" class="max-w-5xl mx-auto paper-texture shadow-xl rounded-lg overflow-hidden border-8 border-double border-primary/80">
+        <!-- 公示头部 -->
+        <div class="text-center py-8 px-4 md:px-8 relative">
+            <div class="absolute top-4 left-4 md:top-6 md:left-6 w-16 h-16 md:w-20 md:h-20 seal rounded-full flex items-center justify-center text-xs md:text-sm font-bold opacity-80">
+                公益<br>事业
+            </div>
+            <div class="absolute top-4 right-4 md:top-6 md:right-6 w-16 h-16 md:w-20 md:h-20 seal rounded-full flex items-center justify-center text-xs md:text-sm font-bold opacity-80">
+                功德<br>无量
+            </div>
+            
+            <h1 class="font-song text-2xl md:text-4xl font-black text-primary mb-2 tracking-wider">周湾到大栗道路</h1>
+            <h2 class="font-song text-xl md:text-3xl font-bold text-ink mb-4">加宽硬化捐资投工功德公示榜</h2>
+            <p class="text-base md:text-lg text-ink/80 max-w-3xl mx-auto leading-relaxed">
+                道通则人兴，路通则财旺。衷心感谢各位乡亲、乡贤及社会各界友人的鼎力支持，共筑乡村振兴致富路，芳名永载，功德长存！
+            </p>
+            <p class="text-sm text-ink/60 mt-2" id="updateDate">统计截止日期：2026年11月10日</p>
+        </div>
+
+        <!-- 统计数据卡片 -->
+        <div class="px-4 md:px-8 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                <div class="bg-white/80 rounded-lg p-3 md:p-4 border border-secondary/30 text-center shadow-sm">
+                    <div class="text-xs md:text-sm text-ink/60 mb-1">累计捐资</div>
+                    <div class="text-xl md:text-3xl font-bold text-primary" id="totalMoney">0.00</div>
+                    <div class="text-xs text-ink/60">元</div>
+                </div>
+                <div class="bg-white/80 rounded-lg p-3 md:p-4 border border-accent/30 text-center shadow-sm">
+                    <div class="text-xs md:text-sm text-ink/60 mb-1">累计投工</div>
+                    <div class="text-xl md:text-3xl font-bold text-accent" id="totalWork">0</div>
+                    <div class="text-xs text-ink/60">工日</div>
+                </div>
+                <div class="bg-white/80 rounded-lg p-3 md:p-4 border border-secondary/30 text-center shadow-sm">
+                    <div class="text-xs md:text-sm text-ink/60 mb-1">捐物折款</div>
+                    <div class="text-xl md:text-3xl font-bold text-secondary" id="totalGoods">0.00</div>
+                    <div class="text-xs text-ink/60">元</div>
+                </div>
+                <div class="bg-white/80 rounded-lg p-3 md:p-4 border border-primary/30 text-center shadow-sm">
+                    <div class="text-xs md:text-sm text-ink/60 mb-1">参与人次</div>
+                    <div class="text-xl md:text-3xl font-bold text-ink" id="totalCount">0</div>
+                    <div class="text-xs text-ink/60">人/单位</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 公示表格 -->
+        <div class="px-4 md:px-8 pb-8">
+            <div class="overflow-x-auto">
+                <table class="w-full table-border border-collapse font-song text-sm md:text-base">
+                    <thead>
+                        <tr class="bg-primary/10">
+                            <th class="py-2 md:py-3 px-2 md:px-4 text-center w-12 md:w-16">序号</th>
+                            <th class="py-2 md:py-3 px-2 md:px-4 text-center">姓名/单位</th>
+                            <th class="py-2 md:py-3 px-2 md:px-4 text-center w-20 md:w-28">类型</th>
+                            <th class="py-2 md:py-3 px-2 md:px-4 text-center w-24 md:w-32">捐资/数量</th>
+                            <th class="py-2 md:py-3 px-2 md:px-4 text-center">备注</th>
+                            <th class="py-2 md:py-3 px-2 md:px-4 text-center w-24 md:w-32">日期</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordTable">
+                        <tr>
+                            <td colspan="6" class="py-8 text-center text-ink/50">暂无记录，点击"添加记录"开始录入</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 底部说明 -->
+            <div class="mt-6 md:mt-8 text-sm md:text-base text-ink/80 space-y-2">
+                <p><strong>说明：</strong></p>
+                <p>1. 以上排名不分先后，按捐赠时间排序</p>
+                <p>2. 本台账所有捐资投工均为自愿参与，善款专款专用，全程公开透明，接受全体村民监督；</p>
+                <p>3. 数据实时更新，如有遗漏或错误，请及时与周湾组村民理事会联系更正。</p>
+            </div>
+
+            <!-- 落款 -->
+            <div class="mt-8 text-right pr-4 md:pr-8">
+                <p class="font-song text-lg md:text-xl font-bold">周湾组村民理事会</p>
+                <p class="text-sm md:text-base mt-1" id="footerDate">2026年11月10日</p>
+                <p class="text-sm md:text-base mt-1" id="footerDate">技术支持：史雪鹏</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="max-w-5xl mx-auto mt-4 text-center text-sm text-gray-500 px-2">
+        <p>提示：数据自动保存在本地浏览器中；导出图片后手机长按即可保存到相册，可直接打印张贴或发村群公示<br>，村民可直接在线查看最新公示榜</p>
+    </div> -->
+
+    <script>
+        let records = JSON.parse(localStorage.getItem('roadDonationRecords') || '[]');
+        const form = document.getElementById('recordForm');
+        const addFormModal = document.getElementById('addForm');
+        const recordTable = document.getElementById('recordTable');
+        const toast = document.getElementById('toast');
+        const toastText = document.getElementById('toastText');
+        
+        // 显示提示
+        function showToast(msg) {
+            toastText.textContent = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 3000);
+        }
+
+        // 初始化日期为今天
+        document.getElementById('date').valueAsDate = new Date();
+
+        // 切换表单显示
+        function toggleForm() {
+            addFormModal.classList.toggle('hidden');
+            addFormModal.classList.toggle('flex');
+            form.reset();
+            document.getElementById('date').valueAsDate = new Date();
+        }
+
+        // 打印页面
+        function printPage() {
+            showToast('正在唤起打印窗口，请稍候...');
+            window.print();
+        }
+
+        // 提交表单
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const record = {
+                id: Date.now(),
+                name: document.getElementById('name').value.trim(),
+                type: document.getElementById('type').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                note: document.getElementById('note').value.trim(),
+                date: document.getElementById('date').value
+            };
+            records.push(record);
+            saveAndRender();
+            toggleForm();
+            showToast('记录添加成功！');
+        });
+
+        // 删除记录
+        function deleteRecord(id) {
+            if(confirm('确定要删除这条记录吗？')) {
+                records = records.filter(r => r.id !== id);
+                saveAndRender();
+                showToast('记录已删除');
+            }
+        }
+
+        // 保存并渲染
+        function saveAndRender() {
+            localStorage.setItem('roadDonationRecords', JSON.stringify(records));
+            renderTable();
+            updateStats();
+        }
+
+        // 导出当前台账备份文件
+        function exportJSON() {
+            const payload = { version: 1, exportedAt: new Date().toISOString(), records };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `道路捐资投工台账_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showToast('JSON备份已导出');
+        }
+
+        // 导入前完整校验，确认后替换当前本地台账
+        async function importJSON(event) {
+            const input = event.target;
+            const file = input.files && input.files[0];
+            if (!file) return;
+            try {
+                const parsed = JSON.parse(await file.text());
+                const imported = Array.isArray(parsed) ? parsed : parsed.records;
+                if (!Array.isArray(imported)) throw new Error('文件中没有 records 数组');
+                const valid = imported.map((r, i) => {
+                    if (!r || typeof r.name !== 'string' || !['捐资', '投工', '捐物'].includes(r.type) ||
+                        !Number.isFinite(Number(r.amount)) || Number(r.amount) < 0) {
+                        throw new Error(`第 ${i + 1} 条记录格式不正确`);
+                    }
+                    return { id: Number(r.id) || Date.now() + i, name: r.name.trim(), type: r.type,
+                        amount: Number(r.amount), note: String(r.note || ''), date: String(r.date || '') };
+                });
+                if (!confirm(`将导入 ${valid.length} 条记录并替换当前台账（当前 ${records.length} 条）。继续吗？`)) return;
+                records = valid;
+                saveAndRender();
+                showToast(`成功导入 ${records.length} 条记录`);
+            } catch (err) {
+                alert(`导入失败：${err.message || '无法读取文件'}`);
+            } finally {
+                input.value = '';
+            }
+        }
+
+        // 渲染表格
+        function renderTable() {
+            if(records.length === 0) {
+                recordTable.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-ink/50">暂无记录，点击"添加记录"开始录入</td></tr>';
+                return;
+            }
+            // 按日期倒序
+            records.sort((a,b) => new Date(b.date) - new Date(a.date));
+            let html = '';
+            records.forEach((r, index) => {
+                let amountText = '';
+                let typeClass = '';
+                if(r.type === '捐资') {
+                    amountText = r.amount.toFixed(2) + ' 元';
+                    typeClass = 'text-primary font-medium';
+                } else if(r.type === '投工') {
+                    amountText = r.amount + ' 工日';
+                    typeClass = 'text-accent font-medium';
+                } else {
+                    amountText = r.amount.toFixed(2) + ' 元';
+                    typeClass = 'text-secondary font-medium';
+                }
+                const dateText = r.date ? new Date(r.date).toLocaleDateString('zh-CN') : '';
+                html += `
+                <tr class="hover:bg-primary/5">
+                    <td class="py-2 md:py-3 px-2 md:px-4 text-center">${index + 1}</td>
+                    <td class="py-2 md:py-3 px-2 md:px-4">${r.name}</td>
+                    <td class="py-2 md:py-3 px-2 md:px-4 text-center ${typeClass}">${r.type}</td>
+                    <td class="py-2 md:py-3 px-2 md:px-4 text-right">${amountText}</td>
+                    <td class="py-2 md:py-3 px-2 md:px-4">${r.note || '-'}</td>
+                    <td class="py-2 md:py-3 px-2 md:px-4 text-center">${dateText}<button onclick="deleteRecord(${r.id})" class="ml-2 text-gray-400 hover:text-red-500 print:hidden" title="删除"><i class="fa fa-times-circle"></i></button></td>
+                </tr>
+                `;
+            });
+            recordTable.innerHTML = html;
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            let totalMoney = 0, totalWork = 0, totalGoods = 0;
+            records.forEach(r => {
+                if(r.type === '捐资') totalMoney += r.amount;
+                else if(r.type === '投工') totalWork += r.amount;
+                else if(r.type === '捐物') totalGoods += r.amount;
+            });
+            document.getElementById('totalMoney').textContent = totalMoney.toFixed(2);
+            document.getElementById('totalWork').textContent = totalWork;
+            document.getElementById('totalGoods').textContent = totalGoods.toFixed(2);
+            document.getElementById('totalCount').textContent = records.length;
+            
+            // 更新日期
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+            document.getElementById('updateDate').textContent = `统计截止日期：${dateStr}`;
+            document.getElementById('footerDate').textContent = dateStr;
+        }
+
+        // 微信 iOS 中不触发文件下载，生成图片后在预览框长按保存。
+        function ensureHtml2Canvas() {
+            if (typeof window.html2canvas === 'function') return Promise.resolve();
+            const sources = [
+                'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+                'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js',
+                'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'
+            ];
+            return new Promise((resolve, reject) => {
+                let index = 0;
+                const tryNext = () => {
+                    if (typeof window.html2canvas === 'function') return resolve();
+                    if (index >= sources.length) return reject(new Error('截图组件无法从 CDN 加载'));
+                    const script = document.createElement('script');
+                    script.src = sources[index++];
+                    script.onload = () => typeof window.html2canvas === 'function' ? resolve() : tryNext();
+                    script.onerror = tryNext;
+                    document.head.appendChild(script);
+                };
+                tryNext();
+            });
+        }
+
+        async function exportImage() {
+            const area = document.getElementById('publicityArea');
+            const deleteBtns = document.querySelectorAll('.print\\:hidden');
+            showToast('正在生成公示图片，请稍候…');
+            deleteBtns.forEach(el => el.style.display = 'none');
+            try {
+                await ensureHtml2Canvas();
+                // 等待字体和布局稳定，避免截图到滚动中的页面位置。
+                if (document.fonts && document.fonts.ready) await document.fonts.ready;
+                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                // 用适合公示长图的固定画布宽度；手机页面本身较窄，直接截 viewport
+                // 会把表格挤压或裁掉。克隆 DOM 后再解除横向滚动容器的裁切。
+                const width = 1000;
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                const maxPixels = isIOS ? 12000000 : 24000000;
+                const height = area.scrollHeight;
+                const scale = Math.min(isIOS ? 1.25 : 2, Math.sqrt(maxPixels / (width * height)));
+                const canvas = await html2canvas(area, {
+                    scale: Math.max(0.5, scale),
+                    useCORS: true,
+                    backgroundColor: '#fdf8f0',
+                    logging: false,
+                    width,
+                    height,
+                    windowWidth: width,
+                    windowHeight: height,
+                    scrollX: 0,
+                    scrollY: 0,
+                    onclone: clonedDoc => {
+                        const clonedArea = clonedDoc.getElementById('publicityArea');
+                        clonedArea.style.width = width + 'px';
+                        clonedArea.style.maxWidth = 'none';
+                        clonedArea.style.margin = '0';
+                        clonedArea.style.overflow = 'visible';
+                        clonedArea.querySelectorAll('.overflow-x-auto').forEach(el => {
+                            el.style.overflow = 'visible';
+                            el.style.width = '100%';
+                        });
+                        clonedArea.querySelectorAll('table').forEach(el => {
+                            el.style.width = '100%';
+                            el.style.minWidth = '0';
+                        });
+                    }
+                });
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                if (!imgData || imgData === 'data:,') throw new Error('图片尺寸超出浏览器限制');
+                document.getElementById('previewImage').src = imgData;
+                const downloadBtn = document.getElementById('downloadBtn');
+                downloadBtn.href = imgData;
+                downloadBtn.download = `道路捐资投工公示榜_${new Date().toISOString().slice(0, 10)}.jpg`;
+                const modal = document.getElementById('imagePreviewModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modal.scrollTop = 0;
+                showToast('图片已生成，请长按图片保存到相册');
+            } catch (err) {
+                console.error('导出图片失败：', err);
+                const reason = err && err.message ? err.message : '未知错误';
+                showToast(reason.includes('CDN') ? '截图组件加载失败，请检查网络或换浏览器打开' : `生成失败：${reason}`);
+            } finally {
+                deleteBtns.forEach(el => el.style.display = '');
+            }
+        }
+
+        // 关闭图片预览
+        function closeImagePreview() {
+            const modal = document.getElementById('imagePreviewModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // 清空所有数据
+        function clearAll() {
+            if(confirm('确定要清空所有记录吗？此操作不可恢复！')) {
+                records = [];
+                saveAndRender();
+                showToast('所有数据已清空');
+            }
+        }
+
+        // 初始化渲染
+        saveAndRender();
+    </script>
+</body>
+</html>
