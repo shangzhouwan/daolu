@@ -281,6 +281,13 @@ const myData = {
       "type": "捐资",
       "amount": 1000,
       "note": ""
+    },
+    {
+      "id": 1794632578966,
+      "name": "史居正",
+      "type": "捐资",
+      "amount": 1000,
+      "note": ""
     }
   ]
 }
