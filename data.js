@@ -211,6 +211,13 @@ const myData = {
       "type": "捐资",
       "amount": 500,
       "note": ""
+    },
+    {
+      "id": 1794615727712,
+      "name": "史小九",
+      "type": "捐资",
+      "amount": 1000,
+      "note": ""
     }
   ]
 }
