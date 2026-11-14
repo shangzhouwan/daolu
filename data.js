@@ -288,6 +288,13 @@ const myData = {
       "type": "捐资",
       "amount": 1000,
       "note": ""
+    },
+    {
+      "id": 1794633566621,
+      "name": "史小东",
+      "type": "捐资",
+      "amount": 1000,
+      "note": ""
     }
   ]
 }
