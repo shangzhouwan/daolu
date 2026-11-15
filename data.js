@@ -361,7 +361,7 @@ const myData = {
     },
     {
       "id": 1794704739508,
-      "name": "史瑞岭",
+      "name": "史瑞领",
       "type": "捐资",
       "amount": 500,
       "note": ""
