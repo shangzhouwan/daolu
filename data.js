@@ -407,6 +407,13 @@ const myData = {
       "type": "捐资",
       "amount": 500,
       "note": ""
+    },
+    {
+      "id": 1795511275395,
+      "name": "史三宽",
+      "type": "捐资",
+      "amount": 500,
+      "note": ""
     }
   ]
 }
